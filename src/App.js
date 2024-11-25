@@ -33,6 +33,7 @@ import ExpenseList from './Components/ExpenseList';
 import Budget from './Components/Budget';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ExpensePDF from './Components/ExpensePDF';
+import Swal from 'sweetalert2';
 // import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 // const styles = StyleSheet.create({
 //   page: {
@@ -88,7 +89,7 @@ console.log(budget);
   useEffect(() => {
     localStorage.setItem('budget', JSON.stringify(budget));
     localStorage.setItem('expenses', JSON.stringify(expenses));
-
+    console.log("Expenses updated:", expenses);
     const total = expenses.reduce((acc, exp) => acc + exp.amount, 0);
     setTotalExpenses(total);
     setRemainingBudget(budget - total);
@@ -103,25 +104,84 @@ console.log(budget);
     setBudgetExceeded(false);
   };
 
-  const handleAddExpense = (expense) => {
-    if (!isBudgetSet) {
-      setErrorMessage('Please enter your budget first.');
-      return;
-    }
-    setExpenses((prevExpenses) => [...prevExpenses, expense]);
-    setErrorMessage('');
-  };
+const handleAddExpense = (expense) => {
+  if (!isBudgetSet) {
+    setErrorMessage('Please enter your budget first.');
+    return;
+  }
+
+  if (remainingBudget < expense.amount) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Budget Exceeded',
+      text: 'You cannot add this expense as it exceeds your budget!',
+    });
+    return;
+  }
+
+  setExpenses((prevExpenses) => {
+    const updatedExpenses = [...prevExpenses, expense];
+    Swal.fire({
+      icon: 'success',
+      title: 'Expense Added',
+      text: `Expense "${expense.description}" added successfully!`,
+    });
+    return updatedExpenses;
+  });
+  setErrorMessage('');
+};
 
   const handleEditExpense = (updatedExpense) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Expense Edited  successfully!',
+    })
     setExpenses((prevExpenses) =>
       prevExpenses.map((expense) => (expense.id === updatedExpense.id ? updatedExpense : expense))
     );
   };
 
-  const handleRemoveExpense = (id) => {
-    setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== id));
-  };
+  // const handleRemoveExpense = (id) => {
+  //   setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== id));
+    
+  //   return 0;
+  // };
 
+  // const handleRemoveExpense = (id) => {
+  //   const updatedExpenses = expenses.filter((expense) => expense.id !== id);
+  //   console.log("Filtered Expenses:", updatedExpenses);  
+  //   setExpenses(updatedExpenses);
+    
+  
+  //   Swal.fire({
+  //     icon: "success",
+  //     title: "Expense Deleted",
+  //     text: "Expense was successfully removed.",
+  //   });
+  // };
+
+
+  const handleRemoveExpense = (id) => {
+    const updatedExpenses = expenses.filter((expense) => expense.id !== id);
+  
+    if (!updatedExpenses || updatedExpenses.length === 0) {
+      console.log("All expenses removed. Updated Expenses:", updatedExpenses);
+    } else {
+      console.log("Filtered Expenses:", updatedExpenses);
+    }
+  
+    // Safely update the state
+    setExpenses(updatedExpenses);
+  
+    // Trigger SweetAlert for success feedback
+    Swal.fire({
+      icon: "success",
+      title: "Expense Deleted",
+      text: "Expense was successfully removed.",
+    });
+  };
+  
+  
   const groupExpensesByDate = () => {
     return expenses.reduce((grouped, expense) => {
       const date = expense.date;
@@ -139,10 +199,10 @@ console.log(budget);
       <h1 className="text-2xl font-bold text-center mb-4">Expense Tracker</h1>
       <Budget onSetBudget={handleSetBudget} budget={budget} remaining={remainingBudget} />
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-      {budgetExceeded && <p className="text-red-500">Warning: Expenses have exceeded the set budget!</p>}
-      <ExpenseForm onAddExpense={handleAddExpense} />
-      <ExpenseList expenses={expenses} onEditExpense={handleEditExpense} onRemoveExpense={handleRemoveExpense} />
-      <div className="mt-2 text-lg font-bold">Total Expenses:{`${totalExpenses.toFixed(2)} RS`} </div>
+     
+      <ExpenseForm onAddExpense={handleAddExpense} budgetExceeded={budgetExceeded}/>
+     <ExpenseList expenses={expenses} totalExpenses={totalExpenses} onEditExpense={handleEditExpense} onRemoveExpense={handleRemoveExpense} setExpenses={setExpenses}/>
+      {/* <div className="mt-2 text-lg font-bold">Total Expenses:{`${totalExpenses.toFixed(2)} RS`} </div> */}
       <div className="mt-4">
         <h2 className="text-xl font-semibold mb-2">Expense History by Date</h2>
         
@@ -198,3 +258,11 @@ console.log(budget);
 }
 
 export default App;
+
+
+
+
+
+
+
+

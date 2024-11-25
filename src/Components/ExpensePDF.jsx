@@ -143,7 +143,7 @@ const ExpensePDF = ({ expenses, budget }) => {
         <Text style={styles.sectionTitle}>Budget Information</Text>
         <Text>Total Budget:{`${budget.toFixed(2)} RS`} </Text>
         <Text>Remaining Budget: {`${(budget - totalExpenses).toFixed(2)} RS`}</Text>
-        <Text>Total Expenses: {`${totalExpenses.toFixed(2)} RS`}</Text>
+        {/* <Text>Total Expenses: {`${totalExpenses.toFixed(2)} RS`}</Text> */}
 
         {/* Expense List */}
         <Text style={styles.sectionTitle}>Expense List</Text>
@@ -161,8 +161,10 @@ const ExpensePDF = ({ expenses, budget }) => {
             <Text style={styles.tableCol}>{`${expense.amount.toFixed(2)} RS`}</Text>
           </View>
         ))}
+         <Text>Total Expenses: {`${totalExpenses.toFixed(2)} RS`}</Text> 
 
         {/* Expense History by Date */}
+        <div className='mt-20 border border border-black'>
         <Text style={styles.sectionTitle}>Expense History by Date</Text>
         
         {Object.entries(groupedExpenses).map(([date, expensesOnDate]) => (
@@ -182,7 +184,7 @@ const ExpensePDF = ({ expenses, budget }) => {
               </View>
             ))}
           </View>
-        ))}
+        ))}</div>
       </Page>
     </Document>
   );

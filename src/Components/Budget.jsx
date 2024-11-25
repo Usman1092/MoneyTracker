@@ -13,6 +13,7 @@ function Budget({ onSetBudget, budget, remaining }) {
     }
     setInputBudget('');
   };
+ 
 
   return (
     <div className="bg-white p-4 rounded-lg mb-4">
@@ -24,7 +25,7 @@ function Budget({ onSetBudget, budget, remaining }) {
           value={inputBudget}
           onChange={(e) => setInputBudget(e.target.value)}
         />
-        {/* <button type="submit" className="w-auto bg-blue-500 text-white px-4 py-2 rounded-lg">Budget</button> */}
+        <button type="submit" className="w-auto bg-blue-500 text-white px-4 py-2 rounded-lg">Budget</button>
       </form>
       <div className="mt-2 flex flex-col text-left">
         <p>{`Total Budget: ${budget} RS`  } </p>
